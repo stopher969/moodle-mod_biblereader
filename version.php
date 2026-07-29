@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2024030800; // xx branch
-$plugin->requires = 2022041900;  // Moodle 4.0 required (note: does not like .00 added)
-$plugin->supported = [400, 401];   // Moodle 4.0 series
+$plugin->version = 2026072700;  // Moodle 4.5 compatibility.
+$plugin->requires = 2022112800;  // Moodle 4.1 (Build: 20221128).
+$plugin->supported = [401, 405];   // Moodle 4.1 to 4.5.
 // $plugin->incompatible = 311;   // Not available for Moodle 3.11.0 or earlier. (note: 401 does not like using [])
 $plugin->component = 'mod_biblereader';
 $plugin->maturity = MATURITY_ALPHA;
