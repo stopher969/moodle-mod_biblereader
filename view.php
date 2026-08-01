@@ -31,19 +31,40 @@ $cmid = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($cmid, 'biblereader');
 $instance = $DB->get_record('biblereader', ['id'=> $cm->instance], '*', MUST_EXIST);
 
+// N2NCU 2026-08-01: this page had NO access check of any kind. Every Moodle
+// activity view page needs one: without it the page renders for anyone who knows
+// a cmid, and set_module_viewed() below writes a completion record for whatever
+// $USER happens to be. require_login() with the cm also enforces course
+// visibility, activity availability and group restrictions, none of which were
+// being applied here.
+require_login($course, true, $cm);
+
+// N2NCU 2026-08-01: set_url() moved ahead of anything that builds navigation.
+// Navigation initialisation reads $PAGE->url, so setting it afterwards produced
+// "This page did not call $PAGE->set_url()" on every load. Same class of problem
+// as the subscription pages - see TECH_DEBT 23d.
+$url = new moodle_url('/mod/biblereader/view.php', array('id' => $cmid));
+$PAGE->set_url($url);
+
 // navbar
 $PAGE->set_cm($cm, $course); // sets up global $COURSE
-$data = $cm->get_course();
-$coursenode = $PAGE->navigation->find($course, navigation_node::TYPE_COURSE);
 
+// N2NCU 2026-08-01: two dead assignments removed from here:
+//     $data = $cm->get_course();
+//     $coursenode = $PAGE->navigation->find($course, navigation_node::TYPE_COURSE);
+// $data was overwritten before ever being read, and $coursenode was never read at
+// all. The find() call was also a hard failure on PHP 8: find() is declared
+// find($key, $type) taking a string|int key and does array_key_exists($key, ...),
+// but was handed the $course OBJECT. PHP 7 raised a warning, returned false and
+// carried on; PHP 8 raises "Illegal offset type" as a TypeError and the page
+// dies before rendering. Deleting the line fixes the crash and the set_url notice
+// together, since it was the call forcing navigation to build early.
 $PAGE->set_pagelayout('incourse');
 $PAGE->add_body_class('limitedwidth');
 
 // update moodle data
 # $PAGE->set_context(context_system::instance());
 # $PAGE->set_context(context_system::instance($cmid));
-$url = new moodle_url('/mod/biblereader/view.php', array('id'=>$cmid));
-$PAGE->set_url($url);
 
 // activity view completions
 $completion = new completion_info($course);
