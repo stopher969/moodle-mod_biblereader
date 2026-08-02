@@ -388,7 +388,11 @@ class planner {
               'completion.php?id='. $plan_collection['ot'][$index  ]['id'] .'&planid=' .$plan_collection['plan']
             ),
            'planner_href' => $plan_collection['ot'][$index]['id'],
-           'completed_href' => '?id'. $plan_collection['ot'][$index]['id'] .'&planid=' .$this->progress['label_values']['selected_plan'],
+           // N2NCU 2026-08-01: was '?id' with no '=', producing ?id6222&planid=1 -
+           // the cmid silently lost and the page landing on a missing required
+           // param. Reachable: reading.php line ~149 uses completed_href as the
+           // "next" target on the last passage of a plan.
+           'completed_href' => '?id='. $plan_collection['ot'][$index]['id'] .'&planid=' .$this->progress['label_values']['selected_plan'],
          );
        }
      }
