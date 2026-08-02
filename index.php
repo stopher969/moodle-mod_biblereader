@@ -28,6 +28,18 @@ $cmid = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($cmid, 'biblereader');
 $instance = $DB->get_record('biblereader', ['id'=> $cm->instance], '*', MUST_EXIST);
 
+// N2NCU 2026-08-01: no access check existed here. Exposure was bounded, because
+// the page redirects to view.php before rendering and view.php now requires
+// login - but an unauthenticated request could still tell a valid cmid from an
+// invalid one by whether it redirected or threw.
+require_login($course, true, $cm);
+
+// N2NCU 2026-08-01: context and URL set BEFORE the navbar calls below.
+// make_active() builds navigation, which reads $PAGE->url and $PAGE->context, so
+// setting them afterwards produced a debugging notice and used a guessed URL.
+$PAGE->set_context(context_module::instance($cmid));
+$PAGE->set_url(new moodle_url('/mod/biblereader/index.php', array('id' => $cmid)));
+
 // navbar
 $data = $cm->get_course();
 $PAGE->navbar->add(
@@ -46,13 +58,13 @@ $PAGE->navigation->make_active();
 $PAGE->set_pagelayout('incourse');
 $PAGE->add_body_class('limitedwidth');
 
-// update moodle data
-$PAGE->set_context(context_system::instance());
-$url = new moodle_url('/mod/biblereader/view.php', array('id'=>$cmid));
-// $PAGE->set_url($url);
+// N2NCU 2026-08-01: the set_context() here was context_system::instance(), which
+// is the wrong context for a course activity - it is the module context. Both it
+// and set_url() have moved above the navbar calls; see the note there.
+$url = new moodle_url('/mod/biblereader/view.php', array('id' => $cmid));
 
 redirect($url);
 
-echo $OUTPUT->header();
-echo $OUTPUT->box($content, "generalbox center clearfix");
-echo $OUTPUT->footer();
+// N2NCU 2026-08-01: three lines removed from here. They followed redirect(),
+// which calls exit(), so they were unreachable - and one of them rendered
+// $content, a variable this file never defines.
