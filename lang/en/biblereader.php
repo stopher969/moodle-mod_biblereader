@@ -23,6 +23,8 @@
  */
 
 $string['pluginname'] = 'Bible Reader';
+$string['biblereader:addinstance'] = 'Add a new Bible Reader';
+$string['biblereader:view'] = 'View Bible Reader';
 $string['pluginadministration'] = 'Bible Reader';
 $string['modulename'] = 'Bible Reader';
 $string['general'] = 'Options';

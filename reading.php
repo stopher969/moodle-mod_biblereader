@@ -38,11 +38,24 @@ $version = optional_param('ver', null, PARAM_TEXT);
 // reading plan
 $pageid = required_param('pageid', PARAM_INT);
 
+// N2NCU 2026-08-01: no access check existed on this page. See view.php for the
+// full reasoning; this is the same fix.
+require_login($course, true, $cm);
+
+// N2NCU 2026-08-01: set_url() moved ahead of anything that builds navigation.
+// It was at line 66, after the navigation call below, which produced "This page
+// did not call $PAGE->set_url()" on every load.
+$PAGE->set_url(new moodle_url('/mod/biblereader/reading.php', ['id' => $cmid, 'pageid' => $pageid]));
+
 // navbar
 $PAGE->set_cm($cm, $course); // sets up global $COURSE
 $data = $cm->get_course();
-$coursenode = $PAGE->navigation->find($course, navigation_node::TYPE_COURSE);
-// echo '<pre>'; print_r($coursenode); echo '</pre>';
+// N2NCU 2026-08-01: removed a dead assignment that was also a PHP 8 fatal:
+//     $coursenode = $PAGE->navigation->find($course, navigation_node::TYPE_COURSE);
+// find() takes a string|int key and does array_key_exists($key, ...), but was
+// passed the $course OBJECT - "Illegal offset type" as a TypeError on PHP 8,
+// merely a warning on PHP 7. $coursenode was never read. Note $data above IS
+// live: line ~118 sets $data->biblereader on that course object.
 /*
 $PAGE->navbar->add(
   get_string('semester_category', 'biblereader') ." {$data->category}",

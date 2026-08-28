@@ -273,7 +273,11 @@ class planner {
      // DEBUG: course completions
      # echo '<pre>'; print_r($data); echo '</pre>';
 
-     $unlocked = 1; $sum = 1;
+     // Counters start at 0 so the ratio below is arithmetically correct. The
+     // DIV by 0 that this initialisation used to cause is now handled where it
+     // actually occurs - at the division - rather than by offsetting the inputs.
+     // See the commit message: this line has flipped between 0 and 1 four times.
+     $unlocked = 0; $sum = 0;
      foreach($data as $course)
          foreach($course as $activity){
              if($activity == 1)
@@ -285,7 +289,9 @@ class planner {
      # echo '<pre>'; print_r(array('unlocked'=>$unlocked,'sum'=>$sum)); echo '</pre>';
 
      // provide count of plans ready for viewing
-     $result = round( $unlocked / ($sum / 12));
+     // $sum is 0 when the user has no activities at all - that is the DIV by 0
+     // case. Fall back to 1, matching the floor applied just below.
+     $result = ($sum > 0) ? round( $unlocked / ($sum / 12)) : 1;
      if ($result < 1)
         $result = 1;
 
@@ -382,7 +388,11 @@ class planner {
               'completion.php?id='. $plan_collection['ot'][$index  ]['id'] .'&planid=' .$plan_collection['plan']
             ),
            'planner_href' => $plan_collection['ot'][$index]['id'],
-           'completed_href' => '?id'. $plan_collection['ot'][$index]['id'] .'&planid=' .$this->progress['label_values']['selected_plan'],
+           // N2NCU 2026-08-01: was '?id' with no '=', producing ?id6222&planid=1 -
+           // the cmid silently lost and the page landing on a missing required
+           // param. Reachable: reading.php line ~149 uses completed_href as the
+           // "next" target on the last passage of a plan.
+           'completed_href' => '?id='. $plan_collection['ot'][$index]['id'] .'&planid=' .$this->progress['label_values']['selected_plan'],
          );
        }
      }

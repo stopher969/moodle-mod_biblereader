@@ -1,0 +1,19 @@
+# Build tooling. node_modules was committed here - 2,814 files - which meant a
+# deploy would have written the whole npm tree into a live Moodle web root.
+# None of it is needed at runtime: Moodle serves the built AMD output in amd/build,
+# not the toolchain that produces it.
+node_modules/
+
+# Grunt/npm artefacts
+npm-debug.log
+package-lock.json.bak
+
+# Editor and backup droppings. `.php~` files in a Moodle tree are served as
+# PLAIN TEXT by Apache, source and all - that is finding 1 in SECURITY_FINDINGS.
+*~
+*.bak
+*.bak-*
+*.old
+*.orig
+*.save
+.DS_Store

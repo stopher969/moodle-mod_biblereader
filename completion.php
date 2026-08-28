@@ -30,18 +30,28 @@ $instance = $DB->get_record('biblereader', ['id'=> $cm->instance], '*', MUST_EXI
 
 $planid = required_param('planid', PARAM_INT);
 
+// N2NCU 2026-08-01: no access check existed on this page. See view.php for the
+// full reasoning; this is the same fix.
+require_login($course, true, $cm);
+
+// N2NCU 2026-08-01: set_url() moved ahead of anything that builds navigation.
+$url = new moodle_url('/mod/biblereader/completion.php', array('id' => $cmid, 'planid' => $planid));
+$PAGE->set_url($url);
+
 // navbar
 $PAGE->set_cm($cm, $course); // sets up global $COURSE
-$data = $cm->get_course();
-$coursenode = $PAGE->navigation->find($course, navigation_node::TYPE_COURSE);
+// N2NCU 2026-08-01: two dead assignments removed, one of them a PHP 8 fatal:
+//     $data = $cm->get_course();
+//     $coursenode = $PAGE->navigation->find($course, navigation_node::TYPE_COURSE);
+// $data is reassigned below before it is ever read, and $coursenode was never
+// read. The find() call passed the $course OBJECT where a string|int key is
+// required - "Illegal offset type" as a TypeError on PHP 8.
 
 $PAGE->set_pagelayout('incourse');
 $PAGE->add_body_class('limitedwidth');
 
 // update moodle data
 # $PAGE->set_context(context_system::instance());
-$url = new moodle_url('/mod/biblereader/completion.php', array('id'=>$cmid));
-$PAGE->set_url($url);
 
 // log page view
 /*
