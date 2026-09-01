@@ -33,7 +33,7 @@ $functions = [
         'classname'   => 'mod_biblereader_external',                            // TODO Moodle 4.2+ 'mod_biblereader_external\external\my_custom_func'
 
         // default function called is execute(), so change if different
-        'methodname'  => 'submit_user_preferences', 				            // TODO Moodle 4.2+ change to execute() or remove completely, will rely on classname autoloaded function above
+        'methodname'  => 'passage_completed', 				            // TODO Moodle 4.2+ change to execute() or remove completely, will rely on classname autoloaded function above
     
         // A brief, human-readable, description of the web service function.
         'description' => 'Store passage as read (+ timestamp) per account.',

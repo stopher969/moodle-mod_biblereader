@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026072700;  // Moodle 4.5 compatibility.
+$plugin->version = 2026090100;  // Moodle 4.5 compatibility. Bumped so db/services.php re-registers (see commit message).
 $plugin->requires = 2022112800;  // Moodle 4.1 (Build: 20221128).
 $plugin->supported = [401, 405];   // Moodle 4.1 to 4.5.
 // $plugin->incompatible = 311;   // Not available for Moodle 3.11.0 or earlier. (note: 401 does not like using [])
