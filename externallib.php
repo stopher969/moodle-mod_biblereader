@@ -8,9 +8,14 @@ require_once("$CFG->dirroot/mod/biblereader/locallib.php");
 require_once("$CFG->dirroot/lib/completionlib.php");
 
 
-// \mod_biblereader\external\external_api
-// external_api
-class mod_biblereader_external extends \mod_biblereader\external\external_api {
+// TODO Moodle 4.3: move functions outs of externallib.php and into autoloaded PHP classes in "classes/external/my_custom_functions.php"
+// don't forget to update db/services.php
+// a) classnames from 'mod_biblereader_external' to 'mod_biblereader_external\external\my_custom_functions'
+// b) don't forget to update db/services.php remove methodnames
+
+// TODO Moodle 4.3: class mod_biblereader_external extends \mod_biblereader\external\external_api {
+// This file will only be provided for fallback support for Moodle 4.1 and earlier. Moodle 4.2 and later versions will ignore this file.
+class mod_biblereader_external extends external_api {
 
    /**
     * Describes the form for submit_user_preferences webservice.
